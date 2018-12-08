@@ -74,7 +74,7 @@ let many = ManyVariants::Three(true, 1, 2);
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 ```
 
-## Mutliple, named field case
+## Multiple, named field case
 
 This will return a tuple of the inner types, like the unnamed option: 
 
