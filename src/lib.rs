@@ -9,8 +9,33 @@ use proc_macro2::{Ident, Span, TokenStream};
 use syn::DeriveInput;
 
 /// returns first the types to return, the match names, and then tokens to the field accesses
-fn unnamed_fields_return(fields: &syn::FieldsUnnamed) -> (TokenStream, TokenStream, TokenStream) {
-    match fields.unnamed.len() {
+fn unit_fields_return(
+    name: &syn::Ident,
+    variant_name: &syn::Ident,
+    function_name: &Ident,
+) -> TokenStream {
+    quote!(
+        impl #name {
+            pub fn #function_name(&self) -> Option<isize> {
+               match self {
+                   #name::#variant_name => {
+                       Some(#name::#variant_name as isize)
+                   }
+                   _ => None
+               }
+            }
+        }
+    )
+}
+
+/// returns first the types to return, the match names, and then tokens to the field accesses
+fn unnamed_fields_return(
+    name: &syn::Ident,
+    variant_name: &syn::Ident,
+    function_name: &Ident,
+    fields: &syn::FieldsUnnamed,
+) -> TokenStream {
+    let (returns, matches, accesses) = match fields.unnamed.len() {
         1 => {
             let field = fields.unnamed.first().expect("no fields on type");
             let field = field.value();
@@ -36,14 +61,22 @@ fn unnamed_fields_return(fields: &syn::FieldsUnnamed) -> (TokenStream, TokenStre
                 accesses.extend(quote!(&#match_name,));
             }
 
-            // panic!(
-            //     "returns: {} mathes: {} accesses: {}",
-            //     returns, matches, accesses
-            // );
-
             (quote!((#returns)), quote!(#matches), quote!((#accesses)))
         }
-    }
+    };
+
+    quote!(
+        impl #name {
+            pub fn #function_name(&self) -> Option<#returns> {
+               match self {
+                   #name::#variant_name(#matches) => {
+                       Some(#accesses)
+                   }
+                   _ => None
+               }
+            }
+        }
+    )
 }
 
 fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
@@ -64,23 +97,15 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
             Span::call_site(),
         );
 
-        let (returns, matches, accesses) = match &variant_data.fields {
-            syn::Fields::Unnamed(unnamed) => unnamed_fields_return(&unnamed),
+        let tokens = match &variant_data.fields {
+            syn::Fields::Unit => unit_fields_return(name, variant_name, &function_name),
+            syn::Fields::Unnamed(unnamed) => {
+                unnamed_fields_return(name, variant_name, &function_name, &unnamed)
+            }
             _ => panic!("not supported"),
         };
 
-        stream.extend(quote!(
-            impl #name {
-                pub fn #function_name(&self) -> Option<#returns> {
-                   match self {
-                       #name::#variant_name(#matches) => {
-                           Some(#accesses)
-                       }
-                       _ => None
-                   }
-                }
-            }
-        ));
+        stream.extend(tokens);
     }
 
     stream
