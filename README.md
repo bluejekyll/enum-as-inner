@@ -73,3 +73,27 @@ let many = ManyVariants::Three(true, 1, 2);
 
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 ```
+
+## Mutliple, named field case
+
+This will return a tuple of the inner types, like the unnamed option: 
+
+```rust
+#[macro_use]
+extern crate enum_as_inner;
+
+#[derive(EnumAsInner)]
+enum ManyVariants {
+    One{ one: u32 },
+    Two{ one: u32, two: i32 },
+    Three{ one: bool, two: u32, three: i64 },
+}
+```
+
+And can be accessed like:
+
+```rust
+let many = ManyVariants::Three(true, 1, 2);
+
+assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+```
