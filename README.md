@@ -36,7 +36,7 @@ extern crate enum_as_inner;
 
 #[derive(EnumAsInner)]
 enum UnitVariants {
-    Zero = 0_isize,
+    Zero,
     One,
     Two,
 }
@@ -47,7 +47,7 @@ These are not references:
 ```rust
 let unit = UnitVariants::Two;
 
-assert_eq!(unit.as_two().unwrap(), 2_isize);
+assert_eq!(unit.as_two().unwrap(), ());
 ```
 
 ## Mutliple, unnamed field case
@@ -93,7 +93,7 @@ enum ManyVariants {
 And can be accessed like:
 
 ```rust
-let many = ManyVariants::Three(true, 1, 2);
+let many = ManyVariants::Three{ one: true, two: 1, three: 2 };
 
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 ```
