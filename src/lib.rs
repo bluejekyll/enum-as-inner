@@ -108,16 +108,16 @@ fn unit_fields_return(
     name: &syn::Ident,
     variant_name: &syn::Ident,
     function_name: &Ident,
+    doc: &str,
 ) -> TokenStream {
     quote!(
-        impl #name {
-            pub fn #function_name(&self) -> Option<()> {
-               match self {
-                   #name::#variant_name => {
-                       Some(())
-                   }
-                   _ => None
-               }
+        #[doc = #doc ]
+        pub fn #function_name(&self) -> Option<()> {
+            match self {
+                #name::#variant_name => {
+                    Some(())
+                }
+                _ => None
             }
         }
     )
@@ -128,6 +128,7 @@ fn unnamed_fields_return(
     name: &syn::Ident,
     variant_name: &syn::Ident,
     function_name: &Ident,
+    doc: &str,
     fields: &syn::FieldsUnnamed,
 ) -> TokenStream {
     let (returns, matches, accesses) = match fields.unnamed.len() {
@@ -161,14 +162,13 @@ fn unnamed_fields_return(
     };
 
     quote!(
-        impl #name {
-            pub fn #function_name(&self) -> Option<#returns> {
-               match self {
-                   #name::#variant_name(#matches) => {
-                       Some(#accesses)
-                   }
-                   _ => None
-               }
+        #[doc = #doc ]
+        pub fn #function_name(&self) -> Option<#returns> {
+            match self {
+                #name::#variant_name(#matches) => {
+                    Some(#accesses)
+                }
+                _ => None
             }
         }
     )
@@ -179,6 +179,7 @@ fn named_fields_return(
     name: &syn::Ident,
     variant_name: &syn::Ident,
     function_name: &Ident,
+    doc: &str,
     fields: &syn::FieldsNamed,
 ) -> TokenStream {
     let (returns, matches, accesses) = match fields.named.len() {
@@ -214,14 +215,13 @@ fn named_fields_return(
     };
 
     quote!(
-        impl #name {
-            pub fn #function_name(&self) -> Option<#returns> {
-               match self {
-                    #name::#variant_name{ #matches } => {
-                        Some(#accesses)
-                    }
-                   _ => None
-               }
+        #[doc = #doc ]
+        pub fn #function_name(&self) -> Option<#returns> {
+            match self {
+                #name::#variant_name{ #matches } => {
+                    Some(#accesses)
+                }
+                _ => None
             }
         }
     )
@@ -244,21 +244,29 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
             &format!("as_{}", variant_name).to_lowercase(),
             Span::call_site(),
         );
+        let doc = format!(
+        "Optionally returns references to the inner fields if this is a `{}::{}`, otherwise `None`",
+        name, variant_name
+        );
 
         let tokens = match &variant_data.fields {
-            syn::Fields::Unit => unit_fields_return(name, variant_name, &function_name),
+            syn::Fields::Unit => unit_fields_return(name, variant_name, &function_name, &doc),
             syn::Fields::Unnamed(unnamed) => {
-                unnamed_fields_return(name, variant_name, &function_name, &unnamed)
+                unnamed_fields_return(name, variant_name, &function_name, &doc, &unnamed)
             }
             syn::Fields::Named(named) => {
-                named_fields_return(name, variant_name, &function_name, &named)
+                named_fields_return(name, variant_name, &function_name, &doc, &named)
             }
         };
 
         stream.extend(tokens);
     }
 
-    stream
+    quote!(
+        impl #name {
+            #stream
+        }
+    )
 }
 
 #[proc_macro_derive(EnumAsInner)]
