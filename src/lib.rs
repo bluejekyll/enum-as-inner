@@ -100,6 +100,7 @@ extern crate syn;
 #[macro_use]
 extern crate quote;
 
+use heck::SnakeCase;
 use proc_macro2::{Ident, Span, TokenStream};
 use syn::DeriveInput;
 
@@ -241,7 +242,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
     for variant_data in &enum_data.variants {
         let variant_name = &variant_data.ident;
         let function_name = Ident::new(
-            &format!("as_{}", variant_name).to_lowercase(),
+            &format!("as_{}", variant_name).to_snake_case(),
             Span::call_site(),
         );
         let doc = format!(

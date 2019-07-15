@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate enum_as_inner;
+use enum_as_inner::EnumAsInner;
 
 #[derive(EnumAsInner)]
 enum ManyVariants {

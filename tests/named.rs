@@ -1,16 +1,15 @@
-#[macro_use]
-extern crate enum_as_inner;
+use enum_as_inner::EnumAsInner;
 
 #[derive(EnumAsInner)]
 enum ManyVariants {
-    One{ one: u32 },
-    Two{ one: u32, two: i32 },
-    Three{ one: bool, two: u32, three: i64 },
+    One { one: u32 },
+    Two { one: u32, two: i32 },
+    Three { one: bool, two: u32, three: i64 },
 }
 
 #[test]
 fn test_one_named() {
-    let many = ManyVariants::One{ one: 1 };
+    let many = ManyVariants::One { one: 1 };
 
     assert!(many.as_one().is_some());
     assert!(many.as_two().is_none());
@@ -21,7 +20,7 @@ fn test_one_named() {
 
 #[test]
 fn test_two_named() {
-    let many = ManyVariants::Two{ one: 1, two: 2 };
+    let many = ManyVariants::Two { one: 1, two: 2 };
 
     assert!(many.as_one().is_none());
     assert!(many.as_two().is_some());
@@ -32,7 +31,11 @@ fn test_two_named() {
 
 #[test]
 fn test_three_named() {
-    let many = ManyVariants::Three{ one: true, two: 1, three: 2 };
+    let many = ManyVariants::Three {
+        one: true,
+        two: 1,
+        three: 2,
+    };
 
     assert!(many.as_one().is_none());
     assert!(many.as_two().is_none());
