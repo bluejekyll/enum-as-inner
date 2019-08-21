@@ -10,21 +10,22 @@ The basic case is meant for single item enums, like:
 #[macro_use]
 extern crate enum_as_inner;
 
-#[derive(EnumAsInner)]
+#[derive(Debug, EnumAsInner)]
 enum OneEnum {
     One(u32),
 }
 ```
 
-where the inner item can be retrieved with the `as_*()` function:
+where the inner item can be retrieved with the `as_*()` or with the `into_*()` functions:
 
 ```rust
 let one = OneEnum::One(1);
 
 assert_eq!(*one.as_one().unwrap(), 1);
+assert_eq!(one.into_one().unwrap(), 1);
 ```
 
-the result is always a reference for inner items.
+where the result is either a reference for inner items or a tuple containing the inner items.
 
 ## Unit case
 
@@ -50,15 +51,17 @@ let unit = UnitVariants::Two;
 assert_eq!(unit.as_two().unwrap(), ());
 ```
 
+Note that for unit enums there is no `into_*()` function generated.
+
 ## Mutliple, unnamed field case
 
-This will return a tuple of the inner types: 
+This will return a tuple of the inner types:
 
 ```rust
 #[macro_use]
 extern crate enum_as_inner;
 
-#[derive(EnumAsInner)]
+#[derive(Debug, EnumAsInner)]
 enum ManyVariants {
     One(u32),
     Two(u32, i32),
@@ -72,17 +75,18 @@ And can be accessed like:
 let many = ManyVariants::Three(true, 1, 2);
 
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 ```
 
 ## Multiple, named field case
 
-This will return a tuple of the inner types, like the unnamed option: 
+This will return a tuple of the inner types, like the unnamed option:
 
 ```rust
 #[macro_use]
 extern crate enum_as_inner;
 
-#[derive(EnumAsInner)]
+#[derive(Debug, EnumAsInner)]
 enum ManyVariants {
     One{ one: u32 },
     Two{ one: u32, two: i32 },
@@ -96,4 +100,5 @@ And can be accessed like:
 let many = ManyVariants::Three{ one: true, two: 1, three: 2 };
 
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 ```

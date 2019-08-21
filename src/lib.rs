@@ -17,7 +17,7 @@
 //! # #[macro_use] extern crate enum_as_inner;
 //! # fn main() {
 //!
-//! #[derive(EnumAsInner)]
+//! #[derive(Debug, EnumAsInner)]
 //! enum OneEnum {
 //!     One(u32),
 //! }
@@ -25,10 +25,11 @@
 //! let one = OneEnum::One(1);
 //!
 //! assert_eq!(*one.as_one().unwrap(), 1);
+//! assert_eq!(one.into_one().unwrap(), 1);
 //! # }
 //! ```
 //!
-//! the result is always a reference for inner items.
+//! where the result is either a reference for inner items or a tuple containing the inner items.
 //!
 //! ## Unit case
 //!
@@ -51,6 +52,8 @@
 //! # }
 //! ```
 //!
+//! Note that for unit enums there is no `into_*()` function generated.
+//!
 //! ## Mutliple, unnamed field case
 //!
 //! This will return a tuple of the inner types:
@@ -59,7 +62,7 @@
 //! # #[macro_use] extern crate enum_as_inner;
 //! # fn main() {
 //!
-//! #[derive(EnumAsInner)]
+//! #[derive(Debug, EnumAsInner)]
 //! enum ManyVariants {
 //!     One(u32),
 //!     Two(u32, i32),
@@ -69,6 +72,7 @@
 //! let many = ManyVariants::Three(true, 1, 2);
 //!
 //! assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+//! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 //! # }
 //! ```
 //!
@@ -80,16 +84,17 @@
 //! # #[macro_use] extern crate enum_as_inner;
 //! # fn main() {
 //!
-//! #[derive(EnumAsInner)]
+//! #[derive(Debug, EnumAsInner)]
 //! enum ManyVariants {
-//!     One{ one: u32 },
-//!     Two{ one: u32, two: i32 },
-//!     Three{ one: bool, two: u32, three: i64 },
+//!     One { one: u32 },
+//!     Two { one: u32, two: i32 },
+//!     Three { one: bool, two: u32, three: i64 },
 //! }
 //!
-//! let many = ManyVariants::Three{ one: true, two: 1, three: 2 };
+//! let many = ManyVariants::Three { one: true, two: 1, three: 2 };
 //!
 //! assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+//! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 //! # }
 //! ```
 
@@ -127,48 +132,77 @@ fn unit_fields_return(
 fn unnamed_fields_return(
     name: &syn::Ident,
     variant_name: &syn::Ident,
-    function_name: &Ident,
-    doc: &str,
+    (function_name_ref, doc_ref): (&Ident, &str),
+    (function_name_val, doc_val): (&Ident, &str),
     fields: &syn::FieldsUnnamed,
 ) -> TokenStream {
-    let (returns, matches, accesses) = match fields.unnamed.len() {
+    let (returns_ref, returns_val, matches, accesses_ref, accesses_val) = match fields.unnamed.len()
+    {
         1 => {
             let field = fields.unnamed.first().expect("no fields on type");
             let field = field.value();
 
             let returns = &field.ty;
-            let returns = quote!(&#returns);
+            let returns_ref = quote!(&#returns);
+            let returns_val = quote!(#returns);
             let matches = quote!(inner);
-            let accesses = quote!(&inner);
+            let accesses_ref = quote!(&inner);
+            let accesses_val = quote!(inner);
 
-            (returns, matches, accesses)
+            (
+                returns_ref,
+                returns_val,
+                matches,
+                accesses_ref,
+                accesses_val,
+            )
         }
-        0 => (quote!(()), quote!(), quote!(())),
+        0 => (quote!(()), quote!(()), quote!(), quote!(()), quote!(())),
         _ => {
-            let mut returns = TokenStream::new();
+            let mut returns_ref = TokenStream::new();
+            let mut returns_val = TokenStream::new();
             let mut matches = TokenStream::new();
-            let mut accesses = TokenStream::new();
+            let mut accesses_ref = TokenStream::new();
+            let mut accesses_val = TokenStream::new();
 
             for (i, field) in fields.unnamed.iter().enumerate() {
                 let rt = &field.ty;
                 let match_name = Ident::new(&format!("match_{}", i), Span::call_site());
-                returns.extend(quote!(&#rt,));
+                returns_ref.extend(quote!(&#rt,));
+                returns_val.extend(quote!(#rt,));
                 matches.extend(quote!(#match_name,));
-                accesses.extend(quote!(&#match_name,));
+                accesses_ref.extend(quote!(&#match_name,));
+                accesses_val.extend(quote!(#match_name,));
             }
 
-            (quote!((#returns)), quote!(#matches), quote!((#accesses)))
+            (
+                quote!((#returns_ref)),
+                quote!((#returns_val)),
+                quote!(#matches),
+                quote!((#accesses_ref)),
+                quote!((#accesses_val)),
+            )
         }
     };
 
     quote!(
-        #[doc = #doc ]
-        pub fn #function_name(&self) -> Option<#returns> {
+        #[doc = #doc_ref ]
+        pub fn #function_name_ref(&self) -> Option<#returns_ref> {
             match self {
                 #name::#variant_name(#matches) => {
-                    Some(#accesses)
+                    Some(#accesses_ref)
                 }
                 _ => None
+            }
+        }
+
+        #[doc = #doc_val ]
+        pub fn #function_name_val(self) -> ::std::result::Result<#returns_val, Self> {
+            match self {
+                #name::#variant_name(#matches) => {
+                    Ok(#accesses_val)
+                },
+                _ => Err(self)
             }
         }
     )
@@ -178,50 +212,78 @@ fn unnamed_fields_return(
 fn named_fields_return(
     name: &syn::Ident,
     variant_name: &syn::Ident,
-    function_name: &Ident,
-    doc: &str,
+    (function_name_ref, doc_ref): (&Ident, &str),
+    (function_name_val, doc_val): (&Ident, &str),
     fields: &syn::FieldsNamed,
 ) -> TokenStream {
-    let (returns, matches, accesses) = match fields.named.len() {
+    let (returns_ref, returns_val, matches, accesses_ref, accesses_val) = match fields.named.len() {
         1 => {
             let field = fields.named.first().expect("no fields on type");
             let field = field.value();
             let match_name = field.ident.as_ref().expect("expected a named field");
 
             let returns = &field.ty;
-            let returns = quote!(&#returns);
+            let returns_ref = quote!(&#returns);
+            let returns_val = quote!(#returns);
             let matches = quote!(#match_name);
-            let accesses = quote!(&#match_name);
+            let accesses_ref = quote!(&#match_name);
+            let accesses_val = quote!(#match_name);
 
-            (returns, matches, accesses)
+            (
+                returns_ref,
+                returns_val,
+                matches,
+                accesses_ref,
+                accesses_val,
+            )
         }
-        0 => (quote!(()), quote!(), quote!(())),
+        0 => (quote!(()), quote!(()), quote!(), quote!(()), quote!(())),
         _ => {
-            let mut returns = TokenStream::new();
+            let mut returns_ref = TokenStream::new();
+            let mut returns_val = TokenStream::new();
             let mut matches = TokenStream::new();
-            let mut accesses = TokenStream::new();
+            let mut accesses_ref = TokenStream::new();
+            let mut accesses_val = TokenStream::new();
 
             for field in fields.named.iter() {
                 let rt = &field.ty;
                 let match_name = field.ident.as_ref().expect("expected a named field");
 
-                returns.extend(quote!(&#rt,));
+                returns_ref.extend(quote!(&#rt,));
+                returns_val.extend(quote!(#rt,));
                 matches.extend(quote!(#match_name,));
-                accesses.extend(quote!(&#match_name,));
+                accesses_ref.extend(quote!(&#match_name,));
+                accesses_val.extend(quote!(#match_name,));
             }
 
-            (quote!((#returns)), quote!(#matches), quote!((#accesses)))
+            (
+                quote!((#returns_ref)),
+                quote!((#returns_val)),
+                quote!(#matches),
+                quote!((#accesses_ref)),
+                quote!((#accesses_val)),
+            )
         }
     };
 
     quote!(
-        #[doc = #doc ]
-        pub fn #function_name(&self) -> Option<#returns> {
+        #[doc = #doc_ref ]
+        pub fn #function_name_ref(&self) -> Option<#returns_ref> {
             match self {
                 #name::#variant_name{ #matches } => {
-                    Some(#accesses)
+                    Some(#accesses_ref)
                 }
                 _ => None
+            }
+        }
+
+        #[doc = #doc_val ]
+        pub fn #function_name_val(self) -> ::std::result::Result<#returns_val, Self> {
+            match self {
+                #name::#variant_name{ #matches } => {
+                    Ok(#accesses_val)
+                }
+                _ => Err(self)
             }
         }
     )
@@ -240,23 +302,44 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
 
     for variant_data in &enum_data.variants {
         let variant_name = &variant_data.ident;
-        let function_name = Ident::new(
+
+        let function_name_ref = Ident::new(
             &format!("as_{}", variant_name).to_lowercase(),
             Span::call_site(),
         );
-        let doc = format!(
-        "Optionally returns references to the inner fields if this is a `{}::{}`, otherwise `None`",
-        name, variant_name
+        let doc_ref = format!(
+            "Optionally returns references to the inner fields if this is a `{}::{}`, otherwise `None`",
+            name,
+            variant_name,
+        );
+        let function_name_val = Ident::new(
+            &format!("into_{}", variant_name).to_lowercase(),
+            Span::call_site(),
+        );
+        let doc_val = format!(
+            "Returns the inner fields if this is a `{}::{}`, otherwise returns back the enum in the `Err` case of the result",
+            name,
+            variant_name,
         );
 
         let tokens = match &variant_data.fields {
-            syn::Fields::Unit => unit_fields_return(name, variant_name, &function_name, &doc),
-            syn::Fields::Unnamed(unnamed) => {
-                unnamed_fields_return(name, variant_name, &function_name, &doc, &unnamed)
+            syn::Fields::Unit => {
+                unit_fields_return(name, variant_name, &function_name_ref, &doc_ref)
             }
-            syn::Fields::Named(named) => {
-                named_fields_return(name, variant_name, &function_name, &doc, &named)
-            }
+            syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
+                name,
+                variant_name,
+                (&function_name_ref, &doc_ref),
+                (&function_name_val, &doc_val),
+                &unnamed,
+            ),
+            syn::Fields::Named(named) => named_fields_return(
+                name,
+                variant_name,
+                (&function_name_ref, &doc_ref),
+                (&function_name_val, &doc_val),
+                &named,
+            ),
         };
 
         stream.extend(tokens);
