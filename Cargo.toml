@@ -18,6 +18,7 @@ license = "MIT/Apache-2.0"
 proc-macro = true
 
 [dependencies]
-syn = "0.15"
-quote = "0.6"
+syn = "1.0"
+quote = "1.0"
 proc-macro2 = "0.4"
+heck = "0.3"
