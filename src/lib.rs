@@ -197,7 +197,7 @@ fn unnamed_fields_return(
         }
 
         #[doc = #doc_val ]
-        pub fn #function_name_val(self) -> ::std::result::Result<#returns_val, Self> {
+        pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
             match self {
                 #name::#variant_name(#matches) => {
                     Ok(#accesses_val)
@@ -277,7 +277,7 @@ fn named_fields_return(
         }
 
         #[doc = #doc_val ]
-        pub fn #function_name_val(self) -> ::std::result::Result<#returns_val, Self> {
+        pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
             match self {
                 #name::#variant_name{ #matches } => {
                     Ok(#accesses_val)
