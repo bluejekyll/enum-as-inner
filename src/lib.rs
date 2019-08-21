@@ -303,7 +303,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
 
     for variant_data in &enum_data.variants {
         let variant_name = &variant_data.ident;
-        let function_name = Ident::new(
+        let function_name_ref = Ident::new(
             &format!("as_{}", variant_name).to_snake_case(),
             Span::call_site(),
         );
