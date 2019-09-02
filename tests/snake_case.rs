@@ -1,6 +1,6 @@
 use enum_as_inner::EnumAsInner;
 
-#[derive(EnumAsInner)]
+#[derive(Debug, EnumAsInner)]
 enum MixedCaseVariants {
     XMLIsNotCool,
     #[allow(non_camel_case_types)]
@@ -30,6 +30,7 @@ fn test_rust_unnamed() {
     assert!(mixed.as_ymca().is_none());
 
     assert_eq!(*mixed.as_rust_is_cool_though().unwrap(), 42);
+    assert_eq!(mixed.into_rust_is_cool_though().unwrap(), 42);
 }
 
 #[test]
@@ -41,4 +42,5 @@ fn test_ymca_named() {
     assert!(mixed.as_ymca().is_some());
 
     assert_eq!(*mixed.as_ymca().unwrap(), (-32_768));
+    assert_eq!(mixed.into_ymca().unwrap(), (-32_768));
 }

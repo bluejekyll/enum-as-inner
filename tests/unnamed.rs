@@ -1,6 +1,6 @@
 use enum_as_inner::EnumAsInner;
 
-#[derive(EnumAsInner)]
+#[derive(Debug, EnumAsInner)]
 enum ManyVariants {
     One(u32),
     Two(u32, i32),
@@ -16,6 +16,7 @@ fn test_one_unnamed() {
     assert!(many.as_three().is_none());
 
     assert_eq!(*many.as_one().unwrap(), 1_u32);
+    assert_eq!(many.into_one().unwrap(), 1_u32);
 }
 
 #[test]
@@ -27,6 +28,7 @@ fn test_two_unnamed() {
     assert!(many.as_three().is_none());
 
     assert_eq!(many.as_two().unwrap(), (&1_u32, &2_i32));
+    assert_eq!(many.into_two().unwrap(), (1_u32, 2_i32));
 }
 
 #[test]
@@ -38,4 +40,5 @@ fn test_three_unnamed() {
     assert!(many.as_three().is_some());
 
     assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+    assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 }
