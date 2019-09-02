@@ -135,7 +135,6 @@ fn unnamed_fields_return(
     let (returns, matches, accesses) = match fields.unnamed.len() {
         1 => {
             let field = fields.unnamed.first().expect("no fields on type");
-            let field = field.value();
 
             let returns = &field.ty;
             let returns = quote!(&#returns);
@@ -186,7 +185,6 @@ fn named_fields_return(
     let (returns, matches, accesses) = match fields.named.len() {
         1 => {
             let field = fields.named.first().expect("no fields on type");
-            let field = field.value();
             let match_name = field.ident.as_ref().expect("expected a named field");
 
             let returns = &field.ty;
