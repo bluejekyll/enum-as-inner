@@ -1,0 +1,39 @@
+sudo: required
+dist: xenial
+language: rust
+
+matrix:
+  include:
+    # parallel builds for tests
+    - rust: stable
+      env: NAME=stable
+           RUST_BACKTRACE=full
+      before_install:
+        - rustup component add rustfmt
+      script:
+        - cargo test
+
+    # parallel builds for tests
+    - rust: nightly
+      env: NAME=stable
+           RUST_BACKTRACE=full
+      before_install:
+        - rustup component add rustfmt
+      script:
+        - cargo test
+
+
+    # clippy
+    - rust: stable
+      env: NAME=clippy
+           RUST_BACKTRACE=full
+      before_install:
+        - rustup component add clippy
+        - rustup component add rustfmt
+      script:
+        - cargo clippy -- -D warnings
+
+script:
+  - cargo test
+
+#after_success: scripts/run_kcov.sh
