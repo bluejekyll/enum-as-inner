@@ -7,8 +7,7 @@ A deriving proc-macro for generating functions to automatically give access to t
 The basic case is meant for single item enums, like:
 
 ```rust
-#[macro_use]
-extern crate enum_as_inner;
+use enum_as_inner::EnumAsInner;
 
 #[derive(Debug, EnumAsInner)]
 enum OneEnum {
@@ -32,8 +31,7 @@ where the result is either a reference for inner items or a tuple containing the
 This will return copy's of the value of the unit variant, as `isize`:
 
 ```rust
-#[macro_use]
-extern crate enum_as_inner;
+use enum_as_inner::EnumAsInner;
 
 #[derive(EnumAsInner)]
 enum UnitVariants {
@@ -58,8 +56,7 @@ Note that for unit enums there is no `into_*()` function generated.
 This will return a tuple of the inner types:
 
 ```rust
-#[macro_use]
-extern crate enum_as_inner;
+use enum_as_inner::EnumAsInner;
 
 #[derive(Debug, EnumAsInner)]
 enum ManyVariants {
@@ -83,8 +80,7 @@ assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 This will return a tuple of the inner types, like the unnamed option:
 
 ```rust
-#[macro_use]
-extern crate enum_as_inner;
+use enum_as_inner::EnumAsInner;
 
 #[derive(Debug, EnumAsInner)]
 enum ManyVariants {

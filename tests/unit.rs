@@ -15,7 +15,7 @@ fn test_zero_unit() {
     assert!(unit.as_one().is_none());
     assert!(unit.as_two().is_none());
 
-    assert_eq!(unit.as_zero().unwrap(), ());
+    unit.as_zero().expect("expected ");
 }
 
 #[test]
@@ -26,7 +26,7 @@ fn test_one_unit() {
     assert!(unit.as_one().is_some());
     assert!(unit.as_two().is_none());
 
-    assert_eq!(unit.as_one().unwrap(), ());
+    unit.as_one().expect("should have been some unit");
 }
 
 #[test]
@@ -37,5 +37,5 @@ fn test_two_unit() {
     assert!(unit.as_one().is_none());
     assert!(unit.as_two().is_some());
 
-    assert_eq!(unit.as_two().unwrap(), ());
+    unit.as_two().expect("should have been some unit");
 }
