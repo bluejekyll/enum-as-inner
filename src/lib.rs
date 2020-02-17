@@ -14,8 +14,7 @@
 //! The basic case is meant for single item enums, like:
 //!
 //! ```rust
-//! # #[macro_use] extern crate enum_as_inner;
-//! # fn main() {
+//! use enum_as_inner::EnumAsInner;
 //!
 //! #[derive(Debug, EnumAsInner)]
 //! enum OneEnum {
@@ -26,7 +25,6 @@
 //!
 //! assert_eq!(*one.as_one().unwrap(), 1);
 //! assert_eq!(one.into_one().unwrap(), 1);
-//! # }
 //! ```
 //!
 //! where the result is either a reference for inner items or a tuple containing the inner items.
@@ -36,8 +34,7 @@
 //! This will return copy's of the value of the unit variant, as `isize`:
 //!
 //! ```rust
-//! # #[macro_use] extern crate enum_as_inner;
-//! # fn main() {
+//! use enum_as_inner::EnumAsInner;
 //!
 //! #[derive(EnumAsInner)]
 //! enum UnitVariants {
@@ -49,7 +46,6 @@
 //! let unit = UnitVariants::Two;
 //!
 //! assert_eq!(unit.as_two().unwrap(), ());
-//! # }
 //! ```
 //!
 //! Note that for unit enums there is no `into_*()` function generated.
@@ -59,8 +55,7 @@
 //! This will return a tuple of the inner types:
 //!
 //! ```rust
-//! # #[macro_use] extern crate enum_as_inner;
-//! # fn main() {
+//! use enum_as_inner::EnumAsInner;
 //!
 //! #[derive(Debug, EnumAsInner)]
 //! enum ManyVariants {
@@ -73,7 +68,6 @@
 //!
 //! assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 //! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
-//! # }
 //! ```
 //!
 //! ## Multiple, named field case
@@ -81,8 +75,7 @@
 //! This will return a tuple of the inner types, like the unnamed option:
 //!
 //! ```rust
-//! # #[macro_use] extern crate enum_as_inner;
-//! # fn main() {
+//! use enum_as_inner::EnumAsInner;
 //!
 //! #[derive(Debug, EnumAsInner)]
 //! enum ManyVariants {
@@ -95,7 +88,6 @@
 //!
 //! assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 //! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
-//! # }
 //! ```
 
 extern crate proc_macro;

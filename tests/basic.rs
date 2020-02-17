@@ -19,8 +19,12 @@ enum EmptyParendsTest {
 fn test_empty_parends() {
     let empty = EmptyParendsTest::Empty();
 
-    assert_eq!(empty.as_empty().unwrap(), ());
-    assert_eq!(empty.into_empty().unwrap(), ());
+    empty
+        .as_empty()
+        .expect("should have been something and a unit");
+    empty
+        .into_empty()
+        .expect("should have been something and a unit");
 }
 
 #[derive(Debug, EnumAsInner)]

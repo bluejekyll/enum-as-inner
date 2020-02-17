@@ -18,7 +18,9 @@ fn test_xml_unit() {
     assert!(mixed.as_rust_is_cool_though().is_none());
     assert!(mixed.as_ymca().is_none());
 
-    assert_eq!(mixed.as_xml_is_not_cool().unwrap(), ());
+    mixed
+        .as_xml_is_not_cool()
+        .expect("should have been some unit");
 }
 
 #[test]
