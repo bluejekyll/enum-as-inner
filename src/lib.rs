@@ -141,8 +141,7 @@ fn unnamed_fields_return(
     (function_name_val, doc_val): (&Ident, &str),
     fields: &syn::FieldsUnnamed,
 ) -> TokenStream {
-    let (returns_mut_ref, returns_ref, returns_val, matches) = match fields.unnamed.len()
-    {
+    let (returns_mut_ref, returns_ref, returns_val, matches) = match fields.unnamed.len() {
         1 => {
             let field = fields.unnamed.first().expect("no fields on type");
 
@@ -152,12 +151,7 @@ fn unnamed_fields_return(
             let returns_val = quote!(#returns);
             let matches = quote!(inner);
 
-            (
-                returns_mut_ref,
-                returns_ref,
-                returns_val,
-                matches,
-            )
+            (returns_mut_ref, returns_ref, returns_val, matches)
         }
         0 => (quote!(()), quote!(()), quote!(()), quote!()),
         _ => {
@@ -237,12 +231,7 @@ fn named_fields_return(
             let returns_val = quote!(#returns);
             let matches = quote!(#match_name);
 
-            (
-                returns_mut_ref,
-                returns_ref,
-                returns_val,
-                matches,
-            )
+            (returns_mut_ref, returns_ref, returns_val, matches)
         }
         0 => (quote!(()), quote!(()), quote!(()), quote!(())),
         _ => {
@@ -346,9 +335,13 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
         );
 
         let tokens = match &variant_data.fields {
-            syn::Fields::Unit => {
-                unit_fields_return(name, variant_name, &function_name_mut_ref, &function_name_ref, &doc_ref)
-            }
+            syn::Fields::Unit => unit_fields_return(
+                name,
+                variant_name,
+                &function_name_mut_ref,
+                &function_name_ref,
+                &doc_ref,
+            ),
             syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
                 name,
                 variant_name,
