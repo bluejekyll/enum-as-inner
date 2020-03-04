@@ -15,12 +15,18 @@ enum OneEnum {
 }
 ```
 
-where the inner item can be retrieved with the `as_*()` or with the `into_*()` functions:
+where the inner item can be retrieved with the `as_*()`/`as_*_mut()` or with the `into_*()` functions:
 
 ```rust
 let one = OneEnum::One(1);
 
 assert_eq!(*one.as_one().unwrap(), 1);
+assert_eq!(one.into_one().unwrap(), 1);
+
+let mut one = OneEnum::One(2);
+
+assert_eq!(*one.as_one().unwrap(), 1);
+assert_eq!(*one.as_one_mut().unwrap(), 1);
 assert_eq!(one.into_one().unwrap(), 1);
 ```
 
@@ -69,9 +75,10 @@ enum ManyVariants {
 And can be accessed like:
 
 ```rust
-let many = ManyVariants::Three(true, 1, 2);
+let mut many = ManyVariants::Three(true, 1, 2);
 
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+assert_eq!(many.as_three_mut().unwrap(), (&mut true, &mut 1_u32, &mut 2_i64));
 assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 ```
 
@@ -93,8 +100,9 @@ enum ManyVariants {
 And can be accessed like:
 
 ```rust
-let many = ManyVariants::Three{ one: true, two: 1, three: 2 };
+let mut many = ManyVariants::Three{ one: true, two: 1, three: 2 };
 
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
+assert_eq!(many.as_three_mut().unwrap(), (&mut true, &mut 1_u32, &mut 2_i64));
 assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 ```
