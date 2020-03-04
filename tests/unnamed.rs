@@ -19,7 +19,6 @@ fn test_one_unnamed() {
     assert!(many.as_two_mut().is_none());
     assert!(many.as_three_mut().is_none());
 
-
     assert_eq!(*many.as_one().unwrap(), 1_u32);
     assert_eq!(*many.as_one_mut().unwrap(), 1_u32);
     assert_eq!(many.into_one().unwrap(), 1_u32);
@@ -55,6 +54,9 @@ fn test_three_unnamed() {
     assert!(many.as_three_mut().is_some());
 
     assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
-    assert_eq!(many.as_three_mut().unwrap(), (&mut true, &mut 1_u32, &mut 2_i64));
+    assert_eq!(
+        many.as_three_mut().unwrap(),
+        (&mut true, &mut 1_u32, &mut 2_i64)
+    );
     assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 }
