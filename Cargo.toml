@@ -1,6 +1,6 @@
 [package]
 name = "enum-as-inner"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Benjamin Fry <benjaminfry@me.com>"]
 edition = "2018"
 
