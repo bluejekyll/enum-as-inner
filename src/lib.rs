@@ -294,6 +294,7 @@ fn named_fields_return(
 
 fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
     let name = &ast.ident;
+    let generics = &ast.generics;
 
     let enum_data = if let syn::Data::Enum(data) = &ast.data {
         data
@@ -363,8 +364,10 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
         stream.extend(tokens);
     }
 
+    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+
     quote!(
-        impl #name {
+        impl #impl_generics #name #ty_generics #where_clause {
             #stream
         }
     )
