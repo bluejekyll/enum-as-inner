@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.3.3
+
+### Added
+
+- Support for Generic enum members (@Jan561) #19
+
 ## 0.3.2
 
 ### Added
