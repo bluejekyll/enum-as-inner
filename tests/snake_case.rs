@@ -1,6 +1,7 @@
 use enum_as_inner::EnumAsInner;
 
 #[derive(Debug, EnumAsInner)]
+#[allow(clippy::upper_case_acronyms)]
 enum MixedCaseVariants {
     XMLIsNotCool,
     #[allow(non_camel_case_types)]
@@ -14,20 +15,16 @@ enum MixedCaseVariants {
 fn test_xml_unit() {
     let mixed = MixedCaseVariants::XMLIsNotCool;
 
-    assert!(mixed.as_xml_is_not_cool().is_some());
+    assert!(mixed.is_xml_is_not_cool());
     assert!(mixed.as_rust_is_cool_though().is_none());
     assert!(mixed.as_ymca().is_none());
-
-    mixed
-        .as_xml_is_not_cool()
-        .expect("should have been some unit");
 }
 
 #[test]
 fn test_rust_unnamed() {
     let mixed = MixedCaseVariants::Rust_IsCoolThough(42);
 
-    assert!(mixed.as_xml_is_not_cool().is_none());
+    assert!(!mixed.is_xml_is_not_cool());
     assert!(mixed.as_rust_is_cool_though().is_some());
     assert!(mixed.as_ymca().is_none());
 
@@ -39,7 +36,7 @@ fn test_rust_unnamed() {
 fn test_ymca_named() {
     let mixed = MixedCaseVariants::YMCA { named: -32_768 };
 
-    assert!(mixed.as_xml_is_not_cool().is_none());
+    assert!(!mixed.is_xml_is_not_cool());
     assert!(mixed.as_rust_is_cool_though().is_none());
     assert!(mixed.as_ymca().is_some());
 
