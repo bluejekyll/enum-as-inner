@@ -9,45 +9,28 @@ enum UnitVariants {
 
 #[test]
 fn test_zero_unit() {
-    let mut unit = UnitVariants::Zero;
+    let unit = UnitVariants::Zero;
 
-    assert!(unit.as_zero().is_some());
-    assert!(unit.as_one().is_none());
-    assert!(unit.as_two().is_none());
-
-    assert!(unit.as_zero_mut().is_some());
-    assert!(unit.as_one_mut().is_none());
-    assert!(unit.as_two_mut().is_none());
-
-    unit.as_zero().expect("expected ");
+    assert!(unit.is_zero());
+    assert!(!unit.is_one());
+    assert!(!unit.is_two());
 }
 
 #[test]
 fn test_one_unit() {
-    let mut unit = UnitVariants::One;
+    let unit = UnitVariants::One;
 
-    assert!(unit.as_zero().is_none());
-    assert!(unit.as_one().is_some());
-    assert!(unit.as_two().is_none());
+    assert!(!unit.is_zero());
+    assert!(unit.is_one());
+    assert!(!unit.is_two());
 
-    assert!(unit.as_zero_mut().is_none());
-    assert!(unit.as_one_mut().is_some());
-    assert!(unit.as_two_mut().is_none());
-
-    unit.as_one().expect("should have been some unit");
 }
 
 #[test]
 fn test_two_unit() {
-    let mut unit = UnitVariants::Two;
+    let unit = UnitVariants::Two;
 
-    assert!(unit.as_zero().is_none());
-    assert!(unit.as_one().is_none());
-    assert!(unit.as_two().is_some());
-
-    assert!(unit.as_zero_mut().is_none());
-    assert!(unit.as_one_mut().is_none());
-    assert!(unit.as_two_mut().is_some());
-
-    unit.as_two().expect("should have been some unit");
+    assert!(!unit.is_zero());
+    assert!(!unit.is_one());
+    assert!(unit.is_two());
 }

@@ -31,7 +31,7 @@
 //!
 //! ## Unit case
 //!
-//! This will return copy's of the value of the unit variant, as `isize`:
+//! This will return true if enum's variant matches the expected type
 //!
 //! ```rust
 //! use enum_as_inner::EnumAsInner;
@@ -45,10 +45,8 @@
 //!
 //! let unit = UnitVariants::Two;
 //!
-//! assert_eq!(unit.as_two().unwrap(), ());
+//! assert!(unit.is_two());
 //! ```
-//!
-//! Note that for unit enums there is no `into_*()` function generated.
 //!
 //! ## Mutliple, unnamed field case
 //!
@@ -105,29 +103,13 @@ use syn::DeriveInput;
 fn unit_fields_return(
     name: &syn::Ident,
     variant_name: &syn::Ident,
-    function_name_mut: &Ident,
     function_name: &Ident,
     doc: &str,
 ) -> TokenStream {
     quote!(
-        #[doc = #doc ]
-        pub fn #function_name_mut(&mut self) -> Option<()> {
-            match self {
-                #name::#variant_name => {
-                    Some(())
-                }
-                _ => None
-            }
-        }
-
-        #[doc = #doc ]
-        pub fn #function_name(&self) -> Option<()> {
-            match self {
-                #name::#variant_name => {
-                    Some(())
-                }
-                _ => None
-            }
+        #[doc = #doc]
+        pub fn #function_name(&self) -> bool {
+            matches!(self, #name::#variant_name)
         }
     )
 }
@@ -335,13 +317,21 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
             variant_name,
         );
 
+        let function_name_is = Ident::new(
+            &format!("is_{}", variant_name).to_snake_case(),
+            Span::call_site(),
+        );
+        let doc_is = format!(
+            "Returns true if this is a `{}::{}`, otherwise false",
+            name, variant_name,
+        );
+
         let tokens = match &variant_data.fields {
             syn::Fields::Unit => unit_fields_return(
                 name,
                 variant_name,
-                &function_name_mut_ref,
-                &function_name_ref,
-                &doc_ref,
+                &function_name_is,
+                &doc_is,
             ),
             syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
                 name,
