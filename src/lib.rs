@@ -97,7 +97,7 @@ extern crate syn;
 #[macro_use]
 extern crate quote;
 
-use heck::SnakeCase;
+use heck::ToSnakeCase;
 use proc_macro2::{Ident, Span, TokenStream};
 use syn::DeriveInput;
 
@@ -349,7 +349,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
                 (&function_name_val, &doc_val),
-                &unnamed,
+                unnamed,
             ),
             syn::Fields::Named(named) => named_fields_return(
                 name,
@@ -357,7 +357,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
                 (&function_name_val, &doc_val),
-                &named,
+                named,
             ),
         };
 
