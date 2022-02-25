@@ -34,7 +34,7 @@ where the result is either a reference for inner items or a tuple containing the
 
 ## Unit case
 
-This will return copy's of the value of the unit variant, as `isize`:
+This will return true if enum's variant matches the expected type
 
 ```rust
 use enum_as_inner::EnumAsInner;
@@ -45,17 +45,11 @@ enum UnitVariants {
     One,
     Two,
 }
-```
 
-These are not references:
-
-```rust
 let unit = UnitVariants::Two;
 
-assert_eq!(unit.as_two().unwrap(), ());
+assert!(unit.is_two());
 ```
-
-Note that for unit enums there is no `into_*()` function generated.
 
 ## Mutliple, unnamed field case
 
