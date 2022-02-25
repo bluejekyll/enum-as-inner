@@ -1,13 +1,12 @@
 use enum_as_inner::EnumAsInner;
 
 #[derive(Debug, EnumAsInner)]
+#[allow(non_camel_case_types)]
+#[allow(clippy::upper_case_acronyms)]
 enum MixedCaseVariants {
     XMLIsNotCool,
-    #[allow(non_camel_case_types)]
     Rust_IsCoolThough(u32),
-    YMCA {
-        named: i16,
-    },
+    YMCA { named: i16 },
 }
 
 #[test]
