@@ -23,7 +23,6 @@ fn test_one_unit() {
     assert!(!unit.is_zero());
     assert!(unit.is_one());
     assert!(!unit.is_two());
-
 }
 
 #[test]
