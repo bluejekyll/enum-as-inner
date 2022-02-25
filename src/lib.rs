@@ -327,12 +327,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
         );
 
         let tokens = match &variant_data.fields {
-            syn::Fields::Unit => unit_fields_return(
-                name,
-                variant_name,
-                &function_name_is,
-                &doc_is,
-            ),
+            syn::Fields::Unit => unit_fields_return(name, variant_name, &function_name_is, &doc_is),
             syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
                 name,
                 variant_name,
