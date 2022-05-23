@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.5.0
+
+- Changed all references in generated functions to use `Self` where applicable.
+
 ## 0.4.0
 
 ### Changed
