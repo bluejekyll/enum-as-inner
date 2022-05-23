@@ -67,4 +67,4 @@ jobs:
       run: cargo fmt -- --check
     # Audit
     - name: cargo audit
-      run: cargo install cargo-audit && cargo audit --deny-warnings
+      run: cargo install cargo-audit && cargo audit --deny warnings
