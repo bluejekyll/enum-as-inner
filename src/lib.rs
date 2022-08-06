@@ -111,6 +111,7 @@ use syn::{parse_macro_input, DeriveInput};
 fn unit_fields_return(variant_name: &syn::Ident, function_name: &Ident, doc: &str) -> TokenStream {
     quote!(
         #[doc = #doc]
+        #[inline]
         pub fn #function_name(&self) -> bool {
             matches!(self, Self::#variant_name)
         }
@@ -164,6 +165,7 @@ fn unnamed_fields_return(
 
     quote!(
         #[doc = #doc_mut_ref ]
+        #[inline]
         pub fn #function_name_mut_ref(&mut self) -> Option<#returns_mut_ref> {
             match self {
                 Self::#variant_name(#matches) => {
@@ -174,6 +176,7 @@ fn unnamed_fields_return(
         }
 
         #[doc = #doc_ref ]
+        #[inline]
         pub fn #function_name_ref(&self) -> Option<#returns_ref> {
             match self {
                 Self::#variant_name(#matches) => {
@@ -184,6 +187,7 @@ fn unnamed_fields_return(
         }
 
         #[doc = #doc_val ]
+        #[inline]
         pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
             match self {
                 Self::#variant_name(#matches) => {
@@ -244,6 +248,7 @@ fn named_fields_return(
 
     quote!(
         #[doc = #doc_mut_ref ]
+        #[inline]
         pub fn #function_name_mut_ref(&mut self) -> Option<#returns_mut_ref> {
             match self {
                 Self::#variant_name{ #matches } => {
@@ -254,6 +259,7 @@ fn named_fields_return(
         }
 
         #[doc = #doc_ref ]
+        #[inline]
         pub fn #function_name_ref(&self) -> Option<#returns_ref> {
             match self {
                 Self::#variant_name{ #matches } => {
@@ -264,6 +270,7 @@ fn named_fields_return(
         }
 
         #[doc = #doc_val ]
+        #[inline]
         pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
             match self {
                 Self::#variant_name{ #matches } => {
