@@ -64,6 +64,7 @@
 //!
 //! let many = ManyVariants::Three(true, 1, 2);
 //!
+//! assert!(many.is_three());
 //! assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 //! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 //! ```
@@ -84,6 +85,7 @@
 //!
 //! let many = ManyVariants::Three { one: true, two: 1, three: 2 };
 //!
+//! assert!(many.is_three());
 //! assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 //! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 //! ```
