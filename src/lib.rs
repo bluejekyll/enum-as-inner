@@ -121,6 +121,7 @@ fn unit_fields_return(variant_name: &syn::Ident, function_name: &Ident, doc: &st
 /// returns first the types to return, the match names, and then tokens to the field accesses
 fn unnamed_fields_return(
     variant_name: &syn::Ident,
+    (function_name_is, doc_is): (&Ident, &str),
     (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
     (function_name_ref, doc_ref): (&Ident, &str),
     (function_name_val, doc_val): (&Ident, &str),
@@ -164,6 +165,13 @@ fn unnamed_fields_return(
     };
 
     quote!(
+        #[doc = #doc_is ]
+        #[inline]
+        #[allow(unused_variables)]
+        pub fn #function_name_is(&self) -> bool {
+            matches!(self, Self::#variant_name(#matches))
+        }
+
         #[doc = #doc_mut_ref ]
         #[inline]
         pub fn #function_name_mut_ref(&mut self) -> Option<#returns_mut_ref> {
@@ -202,6 +210,7 @@ fn unnamed_fields_return(
 /// returns first the types to return, the match names, and then tokens to the field accesses
 fn named_fields_return(
     variant_name: &syn::Ident,
+    (function_name_is, doc_is): (&Ident, &str),
     (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
     (function_name_ref, doc_ref): (&Ident, &str),
     (function_name_val, doc_val): (&Ident, &str),
@@ -247,6 +256,13 @@ fn named_fields_return(
     };
 
     quote!(
+        #[doc = #doc_is ]
+        #[inline]
+        #[allow(unused_variables)]
+        pub fn #function_name_is(&self) -> bool {
+            matches!(self, Self::#variant_name{ #matches })
+        }
+
         #[doc = #doc_mut_ref ]
         #[inline]
         pub fn #function_name_mut_ref(&mut self) -> Option<#returns_mut_ref> {
@@ -338,6 +354,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
             syn::Fields::Unit => unit_fields_return(variant_name, &function_name_is, &doc_is),
             syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
                 variant_name,
+                (&function_name_is, &doc_is),
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
                 (&function_name_val, &doc_val),
@@ -345,6 +362,7 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
             ),
             syn::Fields::Named(named) => named_fields_return(
                 variant_name,
+                (&function_name_is, &doc_is),
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
                 (&function_name_val, &doc_val),
