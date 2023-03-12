@@ -25,6 +25,10 @@ enum ManyVariants {
 fn test_one_named() {
     let mut many = ManyVariants::One { one: 1 };
 
+    assert!(many.is_one());
+    assert!(!many.is_two());
+    assert!(!many.is_three());
+
     assert!(many.as_one().is_some());
     assert!(many.as_two().is_none());
     assert!(many.as_three().is_none());
@@ -41,6 +45,9 @@ fn test_one_named() {
 fn test_two_named() {
     let mut many = ManyVariants::Two { one: 1, two: 2 };
 
+    assert!(!many.is_one());
+    assert!(many.is_two());
+    assert!(!many.is_three());
     assert!(many.as_one().is_none());
     assert!(many.as_two().is_some());
     assert!(many.as_three().is_none());
@@ -61,6 +68,9 @@ fn test_three_named() {
         three: 2,
     };
 
+    assert!(!many.is_one());
+    assert!(!many.is_two());
+    assert!(many.is_three());
     assert!(many.as_one().is_none());
     assert!(many.as_two().is_none());
     assert!(many.as_three().is_some());

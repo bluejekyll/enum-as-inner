@@ -25,6 +25,9 @@ enum WithGenerics<T: Clone + Copy> {
 fn with_generics() {
     let mut with_generics = WithGenerics::A(100);
 
+    assert!(with_generics.is_a());
+    assert!(!with_generics.is_b());
+
     assert!(with_generics.as_a().is_some());
     assert!(with_generics.as_b().is_none());
 

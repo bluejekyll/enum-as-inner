@@ -33,6 +33,8 @@ enum EmptyParendsTest {
 fn test_empty_parends() {
     let mut empty = EmptyParendsTest::Empty();
 
+    assert!(empty.is_empty());
+
     empty
         .as_empty()
         .expect("should have been something and a unit");
@@ -54,6 +56,7 @@ enum OneTest {
 fn test_one() {
     let mut empty = OneTest::One(1);
 
+    assert!(empty.is_one());
     assert_eq!(*empty.as_one().unwrap(), 1);
     assert_eq!(*empty.as_one_mut().unwrap(), 1);
     assert_eq!(empty.into_one().unwrap(), 1);
@@ -68,6 +71,7 @@ enum MultiTest {
 fn test_multi() {
     let mut multi = MultiTest::Multi(1, 1);
 
+    assert!(multi.is_multi());
     assert_eq!(multi.as_multi().unwrap(), (&1_u32, &1_u32));
     assert_eq!(multi.as_multi_mut().unwrap(), (&mut 1_u32, &mut 1_u32));
     assert_eq!(multi.into_multi().unwrap(), (1_u32, 1_u32));
