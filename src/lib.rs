@@ -176,23 +176,23 @@ fn unnamed_fields_return(
 
         #[doc = #doc_mut_ref ]
         #[inline]
-        pub fn #function_name_mut_ref(&mut self) -> Option<#returns_mut_ref> {
+        pub fn #function_name_mut_ref(&mut self) -> ::core::option::Option<#returns_mut_ref> {
             match self {
                 Self::#variant_name(#matches) => {
-                    Some((#matches))
+                    ::core::option::Option::Some((#matches))
                 }
-                _ => None
+                _ => ::core::option::Option::None
             }
         }
 
         #[doc = #doc_ref ]
         #[inline]
-        pub fn #function_name_ref(&self) -> Option<#returns_ref> {
+        pub fn #function_name_ref(&self) -> ::core::option::Option<#returns_ref> {
             match self {
                 Self::#variant_name(#matches) => {
-                    Some((#matches))
+                    ::core::option::Option::Some((#matches))
                 }
-                _ => None
+                _ => ::core::option::Option::None
             }
         }
 
@@ -201,9 +201,9 @@ fn unnamed_fields_return(
         pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
             match self {
                 Self::#variant_name(#matches) => {
-                    Ok((#matches))
+                    ::core::result::Result::Ok((#matches))
                 },
-                _ => Err(self)
+                _ => ::core::result::Result::Err(self)
             }
         }
     )
@@ -267,23 +267,23 @@ fn named_fields_return(
 
         #[doc = #doc_mut_ref ]
         #[inline]
-        pub fn #function_name_mut_ref(&mut self) -> Option<#returns_mut_ref> {
+        pub fn #function_name_mut_ref(&mut self) -> ::core::option::Option<#returns_mut_ref> {
             match self {
                 Self::#variant_name{ #matches } => {
-                    Some((#matches))
+                    ::core::option::Option::Some((#matches))
                 }
-                _ => None
+                _ => ::core::option::Option::None
             }
         }
 
         #[doc = #doc_ref ]
         #[inline]
-        pub fn #function_name_ref(&self) -> Option<#returns_ref> {
+        pub fn #function_name_ref(&self) -> ::core::option::Option<#returns_ref> {
             match self {
                 Self::#variant_name{ #matches } => {
-                    Some((#matches))
+                    ::core::option::Option::Some((#matches))
                 }
-                _ => None
+                _ => ::core::option::Option::None
             }
         }
 
@@ -292,9 +292,9 @@ fn named_fields_return(
         pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
             match self {
                 Self::#variant_name{ #matches } => {
-                    Ok((#matches))
+                    ::core::result::Result::Ok((#matches))
                 }
-                _ => Err(self)
+                _ => ::core::result::Result::Err(self)
             }
         }
     )

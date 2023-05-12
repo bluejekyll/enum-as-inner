@@ -14,6 +14,18 @@
 
 use enum_as_inner::EnumAsInner;
 
+mod name_collisions {
+    #![allow(dead_code, missing_copy_implementations, missing_docs)]
+    struct Option;
+    struct Some;
+    struct None;
+    struct Result;
+    struct Ok;
+    struct Err;
+}
+#[allow(unused_imports)]
+use name_collisions::*;
+
 #[derive(Debug, EnumAsInner)]
 #[allow(non_camel_case_types)]
 #[allow(clippy::upper_case_acronyms)]
