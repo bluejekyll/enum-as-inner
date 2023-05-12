@@ -14,12 +14,24 @@
 
 use enum_as_inner::EnumAsInner;
 
+mod name_collisions {
+    #![allow(dead_code, missing_copy_implementations, missing_docs)]
+    struct Option;
+    struct Some;
+    struct None;
+    struct Result;
+    struct Ok;
+    struct Err;
+}
+#[allow(unused_imports)]
+use name_collisions::*;
+
 #[derive(Debug, EnumAsInner)]
 enum EmptyTest {}
 
 #[test]
 fn test_empty() {
-    let empty = None::<EmptyTest>;
+    let empty = std::option::Option::None::<EmptyTest>;
 
     assert!(empty.is_none());
 }
