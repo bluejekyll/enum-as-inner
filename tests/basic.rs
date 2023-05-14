@@ -16,8 +16,8 @@ use enum_as_inner::EnumAsInner;
 
 pub mod name_collisions {
     #![allow(dead_code, missing_copy_implementations, missing_docs)]
-    pub struct Some;
     pub struct Option;
+    pub struct Some;
     pub struct None;
     pub struct Result;
     pub struct Ok;
