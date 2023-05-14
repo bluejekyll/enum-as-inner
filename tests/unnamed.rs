@@ -14,14 +14,14 @@
 
 use enum_as_inner::EnumAsInner;
 
-mod name_collisions {
+pub mod name_collisions {
     #![allow(dead_code, missing_copy_implementations, missing_docs)]
-    struct Option;
-    struct Some;
-    struct None;
-    struct Result;
-    struct Ok;
-    struct Err;
+    pub struct Option;
+    pub struct Some;
+    pub struct None;
+    pub struct Result;
+    pub struct Ok;
+    pub struct Err;
 }
 #[allow(unused_imports)]
 use name_collisions::*;
