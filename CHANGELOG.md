@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.5.2
+
+- Add is_* impl for non unit variants, #91 by goolmoos
+- Fully qualify both Option and Result in generated code, #96 by kepler-5
+
 ## 0.5.1
 
 - Generated functions now marked `#[inline]` to help with lto across crate boundaries for libraries, #87 by zxch3n
