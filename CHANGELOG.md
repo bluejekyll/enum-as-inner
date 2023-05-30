@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.6.0
+
+- Previous changes deserved a minor version bump, 0.5.2 yanked, 0.6.0 released
+
 ## 0.5.2
 
 - Add is_* impl for non unit variants, #91 by goolmoos
