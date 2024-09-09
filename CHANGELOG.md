@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.6.1
+
+- Updated dependencies to latest compatible versions.
+- `heck` updated to `0.5`
+
 ## 0.6.0
 
 - Previous changes deserved a minor version bump, 0.5.2 yanked, 0.6.0 released
