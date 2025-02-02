@@ -46,6 +46,11 @@ fn with_generics() {
     assert_eq!(with_generics.into_a().unwrap(), 100);
     assert_eq!(*with_generics.as_a().unwrap(), 100);
     assert_eq!(*with_generics.as_a_mut().unwrap(), 100);
+    unsafe {
+        assert_eq!(with_generics.into_a_unchecked(), 100);
+        assert_eq!(*with_generics.as_a_unchecked(), 100);
+        assert_eq!(*with_generics.as_a_mut_unchecked(), 100);
+    }
 
     assert!(with_generics.into_b().is_err());
     assert!(with_generics.as_b().is_none());

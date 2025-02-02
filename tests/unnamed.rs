@@ -26,7 +26,7 @@ pub mod name_collisions {
 #[allow(unused_imports)]
 use name_collisions::*;
 
-#[derive(Debug, EnumAsInner)]
+#[derive(Debug, EnumAsInner, Clone, Copy)]
 enum ManyVariants {
     One(u32),
     Two(u32, i32),
@@ -52,6 +52,12 @@ fn test_one_unnamed() {
     assert_eq!(*many.as_one().unwrap(), 1_u32);
     assert_eq!(*many.as_one_mut().unwrap(), 1_u32);
     assert_eq!(many.into_one().unwrap(), 1_u32);
+
+    unsafe {
+        assert_eq!(*many.as_one_unchecked(), 1_u32);
+        assert_eq!(*many.as_one_mut_unchecked(), 1_u32);
+        assert_eq!(many.into_one_unchecked(), 1_u32);
+    }
 }
 
 #[test]
@@ -73,6 +79,12 @@ fn test_two_unnamed() {
     assert_eq!(many.as_two().unwrap(), (&1_u32, &2_i32));
     assert_eq!(many.as_two_mut().unwrap(), (&mut 1_u32, &mut 2_i32));
     assert_eq!(many.into_two().unwrap(), (1_u32, 2_i32));
+
+    unsafe {
+        assert_eq!(many.as_two_unchecked(), (&1_u32, &2_i32));
+        assert_eq!(many.as_two_mut_unchecked(), (&mut 1_u32, &mut 2_i32));
+        assert_eq!(many.into_two_unchecked(), (1_u32, 2_i32));
+    }
 }
 
 #[test]
@@ -97,4 +109,13 @@ fn test_three_unnamed() {
         (&mut true, &mut 1_u32, &mut 2_i64)
     );
     assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
+
+    unsafe {
+        assert_eq!(many.as_three_unchecked(), (&true, &1_u32, &2_i64));
+        assert_eq!(
+            many.as_three_mut_unchecked(),
+            (&mut true, &mut 1_u32, &mut 2_i64)
+        );
+        assert_eq!(many.into_three_unchecked(), (true, 1_u32, 2_i64));
+    }
 }
