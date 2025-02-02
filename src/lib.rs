@@ -121,18 +121,10 @@ fn unit_fields_return(variant_name: &syn::Ident, function_name: &Ident, doc: &st
 }
 
 /// returns first the types to return, the match names, and then tokens to the field accesses
-fn unnamed_fields_return(
-    variant_name: &syn::Ident,
-    (function_name_is, doc_is): (&Ident, &str),
-    (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
-    (function_name_ref, doc_ref): (&Ident, &str),
-    (function_name_val, doc_val): (&Ident, &str),
-    (function_name_val_unchecked, doc_val_unchecked): (&Ident, &str),
-    (function_name_ref_unchecked, doc_ref_unchecked): (&Ident, &str),
-    (function_name_mut_ref_unchecked, doc_mut_ref_unchecked): (&Ident, &str),
+fn unnamed_fields_return_types(
     fields: &syn::FieldsUnnamed,
-) -> TokenStream {
-    let (returns_mut_ref, returns_ref, returns_val, matches) = match fields.unnamed.len() {
+) -> (TokenStream, TokenStream, TokenStream, TokenStream) {
+    match fields.unnamed.len() {
         1 => {
             let field = fields.unnamed.first().expect("no fields on type");
 
@@ -167,8 +159,70 @@ fn unnamed_fields_return(
                 quote!(#matches),
             )
         }
-    };
+    }
+}
 
+/// returns first the types to return, the match names, and then tokens to the field accesses
+fn named_fields_return_types(
+    fields: &syn::FieldsNamed,
+) -> (TokenStream, TokenStream, TokenStream, TokenStream) {
+    match fields.named.len() {
+        1 => {
+            let field = fields.named.first().expect("no fields on type");
+            let match_name = field.ident.as_ref().expect("expected a named field");
+
+            let returns = &field.ty;
+            let returns_mut_ref = quote!(&mut #returns);
+            let returns_ref = quote!(&#returns);
+            let returns_val = quote!(#returns);
+            let matches = quote!(#match_name);
+
+            (returns_mut_ref, returns_ref, returns_val, matches)
+        }
+        0 => (quote!(()), quote!(()), quote!(()), quote!(())),
+        _ => {
+            let mut returns_mut_ref = TokenStream::new();
+            let mut returns_ref = TokenStream::new();
+            let mut returns_val = TokenStream::new();
+            let mut matches = TokenStream::new();
+
+            for field in fields.named.iter() {
+                let rt = &field.ty;
+                let match_name = field.ident.as_ref().expect("expected a named field");
+
+                returns_mut_ref.extend(quote!(&mut #rt,));
+                returns_ref.extend(quote!(&#rt,));
+                returns_val.extend(quote!(#rt,));
+                matches.extend(quote!(#match_name,));
+            }
+
+            (
+                quote!((#returns_mut_ref)),
+                quote!((#returns_ref)),
+                quote!((#returns_val)),
+                quote!(#matches),
+            )
+        }
+    }
+}
+
+/// create the functions for returning fields
+fn create_field_fns(
+    variant_name: &syn::Ident,
+    (returns_mut_ref, returns_ref, returns_val, matches): (
+        TokenStream,
+        TokenStream,
+        TokenStream,
+        TokenStream,
+    ),
+    (function_name_is, doc_is): (&Ident, &str),
+    (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
+    (function_name_ref, doc_ref): (&Ident, &str),
+    (function_name_val, doc_val): (&Ident, &str),
+    (function_name_val_unchecked, doc_val_unchecked): (&Ident, &str),
+    (function_name_ref_unchecked, doc_ref_unchecked): (&Ident, &str),
+    (function_name_mut_ref_unchecked, doc_mut_ref_unchecked): (&Ident, &str),
+) -> TokenStream {
     quote!(
         #[doc = #doc_is ]
         #[inline]
@@ -211,127 +265,6 @@ fn unnamed_fields_return(
         }
 
         #[doc = #doc_val_unchecked ]
-        #[inline]
-        pub unsafe fn #function_name_val_unchecked(self) -> #returns_val {
-            match self {
-                Self::#variant_name(#matches) => #matches,
-                _ => std::hint::unreachable_unchecked(),
-            }
-        }
-
-        #[doc = #doc_ref_unchecked ]
-        #[inline]
-        pub unsafe fn #function_name_ref_unchecked(&self) -> #returns_ref {
-            match self {
-                Self::#variant_name(#matches) => #matches,
-                _ => std::hint::unreachable_unchecked(),
-            }
-        }
-
-        #[doc = #doc_mut_ref_unchecked ]
-        #[inline]
-        pub unsafe fn #function_name_mut_ref_unchecked(&mut self) -> #returns_mut_ref {
-            match self {
-                Self::#variant_name(#matches) => #matches,
-                _ => std::hint::unreachable_unchecked(),
-            }
-        }
-    )
-}
-
-/// returns first the types to return, the match names, and then tokens to the field accesses
-fn named_fields_return(
-    variant_name: &syn::Ident,
-    (function_name_is, doc_is): (&Ident, &str),
-    (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
-    (function_name_ref, doc_ref): (&Ident, &str),
-    (function_name_val, doc_val): (&Ident, &str),
-    (function_name_val_unchecked, doc_val_unchecked): (&Ident, &str),
-    (function_name_ref_unchecked, doc_ref_unchecked): (&Ident, &str),
-    (function_name_mut_ref_unchecked, doc_mut_ref_unchecked): (&Ident, &str),
-    fields: &syn::FieldsNamed,
-) -> TokenStream {
-    let (returns_mut_ref, returns_ref, returns_val, matches) = match fields.named.len() {
-        1 => {
-            let field = fields.named.first().expect("no fields on type");
-            let match_name = field.ident.as_ref().expect("expected a named field");
-
-            let returns = &field.ty;
-            let returns_mut_ref = quote!(&mut #returns);
-            let returns_ref = quote!(&#returns);
-            let returns_val = quote!(#returns);
-            let matches = quote!(#match_name);
-
-            (returns_mut_ref, returns_ref, returns_val, matches)
-        }
-        0 => (quote!(()), quote!(()), quote!(()), quote!(())),
-        _ => {
-            let mut returns_mut_ref = TokenStream::new();
-            let mut returns_ref = TokenStream::new();
-            let mut returns_val = TokenStream::new();
-            let mut matches = TokenStream::new();
-
-            for field in fields.named.iter() {
-                let rt = &field.ty;
-                let match_name = field.ident.as_ref().expect("expected a named field");
-
-                returns_mut_ref.extend(quote!(&mut #rt,));
-                returns_ref.extend(quote!(&#rt,));
-                returns_val.extend(quote!(#rt,));
-                matches.extend(quote!(#match_name,));
-            }
-
-            (
-                quote!((#returns_mut_ref)),
-                quote!((#returns_ref)),
-                quote!((#returns_val)),
-                quote!(#matches),
-            )
-        }
-    };
-
-    quote!(
-        #[doc = #doc_is ]
-        #[inline]
-        #[allow(unused_variables)]
-        pub fn #function_name_is(&self) -> bool {
-            matches!(self, Self::#variant_name{ #matches })
-        }
-
-        #[doc = #doc_mut_ref ]
-        #[inline]
-        pub fn #function_name_mut_ref(&mut self) -> ::core::option::Option<#returns_mut_ref> {
-            match self {
-                Self::#variant_name{ #matches } => {
-                    ::core::option::Option::Some((#matches))
-                }
-                _ => ::core::option::Option::None
-            }
-        }
-
-        #[doc = #doc_ref ]
-        #[inline]
-        pub fn #function_name_ref(&self) -> ::core::option::Option<#returns_ref> {
-            match self {
-                Self::#variant_name{ #matches } => {
-                    ::core::option::Option::Some((#matches))
-                }
-                _ => ::core::option::Option::None
-            }
-        }
-
-        #[doc = #doc_val ]
-        #[inline]
-        pub fn #function_name_val(self) -> ::core::result::Result<#returns_val, Self> {
-            match self {
-                Self::#variant_name{ #matches } => {
-                    ::core::result::Result::Ok((#matches))
-                }
-                _ => ::core::result::Result::Err(self)
-            }
-        }
-
-                #[doc = #doc_val_unchecked ]
         #[inline]
         pub unsafe fn #function_name_val_unchecked(self) -> #returns_val {
             match self {
@@ -447,8 +380,9 @@ Results in undefined behavior when it is the incorrect variant."#,
 
         let tokens = match &variant_data.fields {
             syn::Fields::Unit => unit_fields_return(variant_name, &function_name_is, &doc_is),
-            syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
+            syn::Fields::Unnamed(unnamed) => create_field_fns(
                 variant_name,
+                unnamed_fields_return_types(unnamed),
                 (&function_name_is, &doc_is),
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
@@ -456,10 +390,10 @@ Results in undefined behavior when it is the incorrect variant."#,
                 (&function_name_val_unchecked, &doc_val_unchecked),
                 (&function_name_ref_unchecked, &doc_ref_unchecked),
                 (&function_name_mut_ref_unchecked, &doc_mut_ref_unchecked),
-                unnamed,
             ),
-            syn::Fields::Named(named) => named_fields_return(
+            syn::Fields::Named(named) => create_field_fns(
                 variant_name,
+                named_fields_return_types(named),
                 (&function_name_is, &doc_is),
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
@@ -467,7 +401,6 @@ Results in undefined behavior when it is the incorrect variant."#,
                 (&function_name_val_unchecked, &doc_val_unchecked),
                 (&function_name_ref_unchecked, &doc_ref_unchecked),
                 (&function_name_mut_ref_unchecked, &doc_mut_ref_unchecked),
-                named,
             ),
         };
 
