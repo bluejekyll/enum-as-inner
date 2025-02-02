@@ -15,7 +15,7 @@ enum OneEnum {
 }
 ```
 
-where the inner item can be retrieved with the `as_*()`/`as_*_mut()` or with the `into_*()` functions:
+where the inner item can be retrieved with the `as_*()`/`as_*_mut()`, `into_*()` or with the `*unchecked` functions:
 
 ```rust
 let one = OneEnum::One(1);
@@ -28,9 +28,15 @@ let mut one = OneEnum::One(2);
 assert_eq!(*one.as_one().unwrap(), 1);
 assert_eq!(*one.as_one_mut().unwrap(), 1);
 assert_eq!(one.into_one().unwrap(), 1);
+
+unsafe {
+    assert_eq!(*one.as_one_unchecked(), 1);
+    assert_eq!(*one.as_one_mut_unchecked(), 1);
+    assert_eq!(one.into_one_unchecked(), 1);
+}
 ```
 
-where the result is either a reference for inner items or a tuple containing the inner items.
+where the result is either a reference for inner items or a tuple containing the inner items. The `*unchecked` functions are unsafe and return either a reference or a tuple containing the inner items.
 
 ## Unit case
 
@@ -74,6 +80,13 @@ let mut many = ManyVariants::Three(true, 1, 2);
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 assert_eq!(many.as_three_mut().unwrap(), (&mut true, &mut 1_u32, &mut 2_i64));
 assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
+
+unsafe {
+    assert_eq!(many.as_three_unchecked(), (&true, &1_u32, &2_i64));
+    assert_eq!(many.as_three_mut_unchecked(), (&mut true, &mut 1_u32, &mut 2_i64));
+    assert_eq!(many.into_three_unchecked(), (true, 1_u32, 2_i64));
+}
+
 ```
 
 ## Multiple, named field case
@@ -99,4 +112,12 @@ let mut many = ManyVariants::Three{ one: true, two: 1, three: 2 };
 assert_eq!(many.as_three().unwrap(), (&true, &1_u32, &2_i64));
 assert_eq!(many.as_three_mut().unwrap(), (&mut true, &mut 1_u32, &mut 2_i64));
 assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
+
+unsafe {
+    assert_eq!(many.as_three_unchecked(), (&true, &1_u32, &2_i64));
+    assert_eq!(many.as_three_mut_unchecked(), (&mut true, &mut 1_u32, &mut 2_i64));
+    assert_eq!(many.into_three_unchecked(), (true, 1_u32, 2_i64));
+}
+
+
 ```
