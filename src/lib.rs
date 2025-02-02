@@ -127,6 +127,9 @@ fn unnamed_fields_return(
     (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
     (function_name_ref, doc_ref): (&Ident, &str),
     (function_name_val, doc_val): (&Ident, &str),
+    (function_name_val_unchecked, doc_val_unchecked): (&Ident, &str),
+    (function_name_ref_unchecked, doc_ref_unchecked): (&Ident, &str),
+    (function_name_mut_ref_unchecked, doc_mut_ref_unchecked): (&Ident, &str),
     fields: &syn::FieldsUnnamed,
 ) -> TokenStream {
     let (returns_mut_ref, returns_ref, returns_val, matches) = match fields.unnamed.len() {
@@ -206,6 +209,33 @@ fn unnamed_fields_return(
                 _ => ::core::result::Result::Err(self)
             }
         }
+
+        #[doc = #doc_val_unchecked ]
+        #[inline]
+        pub unsafe fn #function_name_val_unchecked(self) -> #returns_val {
+            match self {
+                Self::#variant_name(#matches) => #matches,
+                _ => std::hint::unreachable_unchecked(),
+            }
+        }
+
+        #[doc = #doc_ref_unchecked ]
+        #[inline]
+        pub unsafe fn #function_name_ref_unchecked(&self) -> #returns_ref {
+            match self {
+                Self::#variant_name(#matches) => #matches,
+                _ => std::hint::unreachable_unchecked(),
+            }
+        }
+
+        #[doc = #doc_mut_ref_unchecked ]
+        #[inline]
+        pub unsafe fn #function_name_mut_ref_unchecked(&mut self) -> #returns_mut_ref {
+            match self {
+                Self::#variant_name(#matches) => #matches,
+                _ => std::hint::unreachable_unchecked(),
+            }
+        }
     )
 }
 
@@ -216,6 +246,9 @@ fn named_fields_return(
     (function_name_mut_ref, doc_mut_ref): (&Ident, &str),
     (function_name_ref, doc_ref): (&Ident, &str),
     (function_name_val, doc_val): (&Ident, &str),
+    (function_name_val_unchecked, doc_val_unchecked): (&Ident, &str),
+    (function_name_ref_unchecked, doc_ref_unchecked): (&Ident, &str),
+    (function_name_mut_ref_unchecked, doc_mut_ref_unchecked): (&Ident, &str),
     fields: &syn::FieldsNamed,
 ) -> TokenStream {
     let (returns_mut_ref, returns_ref, returns_val, matches) = match fields.named.len() {
@@ -297,6 +330,33 @@ fn named_fields_return(
                 _ => ::core::result::Result::Err(self)
             }
         }
+
+                #[doc = #doc_val_unchecked ]
+        #[inline]
+        pub unsafe fn #function_name_val_unchecked(self) -> #returns_val {
+            match self {
+                Self::#variant_name(#matches) => #matches,
+                _ => std::hint::unreachable_unchecked(),
+            }
+        }
+
+        #[doc = #doc_ref_unchecked ]
+        #[inline]
+        pub unsafe fn #function_name_ref_unchecked(&self) -> #returns_ref {
+            match self {
+                Self::#variant_name(#matches) => #matches,
+                _ => std::hint::unreachable_unchecked(),
+            }
+        }
+
+        #[doc = #doc_mut_ref_unchecked ]
+        #[inline]
+        pub unsafe fn #function_name_mut_ref_unchecked(&mut self) -> #returns_mut_ref {
+            match self {
+                Self::#variant_name(#matches) => #matches,
+                _ => std::hint::unreachable_unchecked(),
+            }
+        }
     )
 }
 
@@ -352,6 +412,39 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
             name, variant_name,
         );
 
+        let function_name_val_unchecked = Ident::new(
+            &format!("into_{}_unchecked", variant_name).to_snake_case(),
+            Span::call_site(),
+        );
+        let doc_val_unchecked = format!(
+            r#"Unchecked return of the inner fields of `{}::{}`.
+# Safety
+Results in undefined behavior when it is the incorrect variant."#,
+            name, variant_name
+        );
+
+        let function_name_ref_unchecked = Ident::new(
+            &format!("as_{}_unchecked", variant_name).to_snake_case(),
+            Span::call_site(),
+        );
+        let doc_ref_unchecked = format!(
+            r#"Unchecked reference of the inner fields of `{}::{}`.
+# Safety
+Results in undefined behavior when it is the incorrect variant."#,
+            name, variant_name
+        );
+
+        let function_name_mut_ref_unchecked = Ident::new(
+            &format!("as_{}_mut_unchecked", variant_name).to_snake_case(),
+            Span::call_site(),
+        );
+        let doc_mut_ref_unchecked = format!(
+            r#"Unchecked mutable reference of the inner fields of `{}::{}`.
+# Safety
+Results in undefined behavior when it is the incorrect variant."#,
+            name, variant_name
+        );
+
         let tokens = match &variant_data.fields {
             syn::Fields::Unit => unit_fields_return(variant_name, &function_name_is, &doc_is),
             syn::Fields::Unnamed(unnamed) => unnamed_fields_return(
@@ -360,6 +453,9 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
                 (&function_name_val, &doc_val),
+                (&function_name_val_unchecked, &doc_val_unchecked),
+                (&function_name_ref_unchecked, &doc_ref_unchecked),
+                (&function_name_mut_ref_unchecked, &doc_mut_ref_unchecked),
                 unnamed,
             ),
             syn::Fields::Named(named) => named_fields_return(
@@ -368,6 +464,9 @@ fn impl_all_as_fns(ast: &DeriveInput) -> TokenStream {
                 (&function_name_mut_ref, &doc_mut_ref),
                 (&function_name_ref, &doc_ref),
                 (&function_name_val, &doc_val),
+                (&function_name_val_unchecked, &doc_val_unchecked),
+                (&function_name_ref_unchecked, &doc_ref_unchecked),
+                (&function_name_mut_ref_unchecked, &doc_mut_ref_unchecked),
                 named,
             ),
         };
