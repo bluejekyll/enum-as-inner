@@ -25,9 +25,9 @@ assert_eq!(one.into_one().unwrap(), 1);
 
 let mut one = OneEnum::One(2);
 
-assert_eq!(*one.as_one().unwrap(), 1);
-assert_eq!(*one.as_one_mut().unwrap(), 1);
-assert_eq!(one.into_one().unwrap(), 1);
+assert_eq!(*one.as_one().unwrap(), 2);
+assert_eq!(*one.as_one_mut().unwrap(), 2);
+assert_eq!(one.into_one().unwrap(), 2);
 ```
 
 where the result is either a reference for inner items or a tuple containing the inner items.
