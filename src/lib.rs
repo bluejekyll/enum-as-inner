@@ -171,7 +171,7 @@ fn unnamed_fields_return(
         #[inline]
         #[allow(unused_variables)]
         pub fn #function_name_is(&self) -> bool {
-            matches!(self, Self::#variant_name(#matches))
+            matches!(self, Self::#variant_name(..))
         }
 
         #[doc = #doc_mut_ref ]
@@ -262,7 +262,7 @@ fn named_fields_return(
         #[inline]
         #[allow(unused_variables)]
         pub fn #function_name_is(&self) -> bool {
-            matches!(self, Self::#variant_name{ #matches })
+            matches!(self, Self::#variant_name{ .. })
         }
 
         #[doc = #doc_mut_ref ]
