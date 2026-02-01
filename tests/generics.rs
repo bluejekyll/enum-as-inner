@@ -1,3 +1,5 @@
+//! Generic unit tests for enum_as_inner crate.
+
 #![warn(
     clippy::default_trait_access,
     clippy::dbg_macro,
