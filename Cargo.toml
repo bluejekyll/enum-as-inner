@@ -22,3 +22,18 @@ heck = "0.5"
 proc-macro2 = "1.0"
 quote = "1.0"
 syn = "2.0"
+
+[lints.rust]
+missing_copy_implementations = "warn"
+missing_docs = "warn"
+non_snake_case = "warn"
+non_upper_case_globals = "warn"
+rust_2018_idioms = "warn"
+unreachable_pub = "warn"
+
+[lints.clippy]
+default_trait_access = "warn"
+dbg_macro = "warn"
+print_stdout = "warn"
+unimplemented = "warn"
+use_self = "warn"

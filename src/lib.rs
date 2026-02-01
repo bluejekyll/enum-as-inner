@@ -90,20 +90,6 @@
 //! assert_eq!(many.into_three().unwrap(), (true, 1_u32, 2_i64));
 //! ```
 
-#![warn(
-    clippy::default_trait_access,
-    clippy::dbg_macro,
-    clippy::print_stdout,
-    clippy::unimplemented,
-    clippy::use_self,
-    missing_copy_implementations,
-    missing_docs,
-    non_snake_case,
-    non_upper_case_globals,
-    rust_2018_idioms,
-    unreachable_pub
-)]
-
 use heck::ToSnakeCase;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
