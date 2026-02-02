@@ -24,7 +24,7 @@ fn test_empty() {
     assert!(empty.is_none());
 }
 
-#[derive(Debug, EnumAsInner)]
+#[derive(Debug, EnumAsInner, Clone, Copy)]
 enum EmptyParendsTest {
     Empty(),
 }
@@ -47,7 +47,7 @@ fn test_empty_parends() {
         .expect("should have been something and a unit");
 }
 
-#[derive(Debug, EnumAsInner)]
+#[derive(Debug, EnumAsInner, Clone, Copy)]
 enum OneTest {
     One(u32),
 }
@@ -60,9 +60,15 @@ fn test_one() {
     assert_eq!(*empty.as_one().unwrap(), 1);
     assert_eq!(*empty.as_one_mut().unwrap(), 1);
     assert_eq!(empty.into_one().unwrap(), 1);
+
+    unsafe {
+        assert_eq!(empty.into_one_unchecked(), 1);
+        assert_eq!(*empty.as_one_unchecked(), 1);
+        assert_eq!(*empty.as_one_mut_unchecked(), 1);
+    }
 }
 
-#[derive(Debug, EnumAsInner)]
+#[derive(Debug, EnumAsInner, Clone, Copy)]
 enum MultiTest {
     Multi(u32, u32),
 }
@@ -75,4 +81,10 @@ fn test_multi() {
     assert_eq!(multi.as_multi().unwrap(), (&1_u32, &1_u32));
     assert_eq!(multi.as_multi_mut().unwrap(), (&mut 1_u32, &mut 1_u32));
     assert_eq!(multi.into_multi().unwrap(), (1_u32, 1_u32));
+
+    unsafe {
+        assert_eq!(multi.as_multi_unchecked(), (&1_u32, &1_u32));
+        assert_eq!(multi.as_multi_mut_unchecked(), (&mut 1_u32, &mut 1_u32));
+        assert_eq!(multi.into_multi_unchecked(), (1_u32, 1_u32));
+    }
 }
