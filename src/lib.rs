@@ -107,6 +107,7 @@ fn unit_fields_return(variant_name: &syn::Ident, function_name: &Ident, doc: &st
 }
 
 /// returns first the types to return, the match names, and then tokens to the field accesses
+#[allow(clippy::too_many_arguments)]
 fn unnamed_fields_return(
     variant_name: &syn::Ident,
     (function_name_is, doc_is): (&Ident, &str),
@@ -226,6 +227,7 @@ fn unnamed_fields_return(
 }
 
 /// returns first the types to return, the match names, and then tokens to the field accesses
+#[allow(clippy::too_many_arguments)]
 fn named_fields_return(
     variant_name: &syn::Ident,
     (function_name_is, doc_is): (&Ident, &str),
