@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "enum-as-inner"
-version = "0.6.1"
+version = "0.7.0"
 dependencies = [
  "heck",
  "proc-macro2",
