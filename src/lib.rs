@@ -202,7 +202,7 @@ fn unnamed_fields_return(
         pub unsafe fn #function_name_val_unchecked(self) -> #returns_val {
             match self {
                 Self::#variant_name(#matches) => (#matches),
-                _ => std::hint::unreachable_unchecked(),
+                _ => core::hint::unreachable_unchecked(),
             }
         }
 
@@ -211,7 +211,7 @@ fn unnamed_fields_return(
         pub unsafe fn #function_name_ref_unchecked(&self) -> #returns_ref {
             match self {
                 Self::#variant_name(#matches) => (#matches),
-                _ => std::hint::unreachable_unchecked(),
+                _ => core::hint::unreachable_unchecked(),
             }
         }
 
@@ -220,7 +220,7 @@ fn unnamed_fields_return(
         pub unsafe fn #function_name_mut_ref_unchecked(&mut self) -> #returns_mut_ref {
             match self {
                 Self::#variant_name(#matches) => (#matches),
-                _ => std::hint::unreachable_unchecked(),
+                _ => core::hint::unreachable_unchecked(),
             }
         }
     )
@@ -324,7 +324,7 @@ fn named_fields_return(
         pub unsafe fn #function_name_val_unchecked(self) -> #returns_val {
             match self {
                 Self::#variant_name{ #matches } => (#matches),
-                _ => std::hint::unreachable_unchecked(),
+                _ => core::hint::unreachable_unchecked(),
             }
         }
 
@@ -333,7 +333,7 @@ fn named_fields_return(
         pub unsafe fn #function_name_ref_unchecked(&self) -> #returns_ref {
             match self {
                 Self::#variant_name{ #matches } => (#matches),
-                _ => std::hint::unreachable_unchecked(),
+                _ => core::hint::unreachable_unchecked(),
             }
         }
 
@@ -342,7 +342,7 @@ fn named_fields_return(
         pub unsafe fn #function_name_mut_ref_unchecked(&mut self) -> #returns_mut_ref {
             match self {
                 Self::#variant_name{ #matches } => (#matches),
-                _ => std::hint::unreachable_unchecked(),
+                _ => core::hint::unreachable_unchecked(),
             }
         }
     )
